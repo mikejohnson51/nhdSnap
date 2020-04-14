@@ -2,33 +2,38 @@
 output: github_document
 ---
 
-<
 # nhdSnap
 
 <!-- badges: start -->
 <!-- badges: end -->
+```{r, echo = F, warning=FALSE, message=FALSE}
+library(dplyr)
+all = c("nexusX", 'the X coordinate (CRS:5070) of the NHD flowline vertix closest to the input point',        
+"nexusY", 'the Y coordinate (CRS:5070) of the NHD flowline vertix closest to the input point',            
+"FL_COMID", 'the COMID of the nearest NHDPlusV2 flowline',
+"FL_REACHCODE", 'the REACHCODE of the nearest NHDPlusV2 flowline',
+"FL_WBCOMID",'the COMID of the waterbody assocaited with the nearest NHDPlusV2 flowline (no association = 0)',
+"FL_NAME", 'the GNIS NAME of the nearest NHDPlusV2 flowline',     
+"FL_FTYPE", 'the FTYPE of the nearest NHDPlusV2 flowline',    
+"WB_COMID",'the COMID of the associated NHDPlusV2 Waterbody (if no direct association a 250m buffer was searched)',
+"WB_REACHCODE", 'the REACHCODE of the associated NHDPlusV2 Waterbody (if no direct association a 250m buffer was searched)',  
+"WB_GNIS_NAME",'the GNIS NAME of the associated NHDPlusV2 Waterbody (if no direct association a 250m buffer was searched)',
+"WB_FTYPE",'the FTYPE of the associated NHDPlusV2 Waterbody (if no direct association a 250m buffer was searched)', 
+"ptID", 'the ID of the input point defined in function (e.g. NID_ID)',
+"ptName", 'the NAME of the input point defined in function (e.g. DAM_NAME)',
+"nexus_to_pt", 'the distance (m) from the nexus point to the input point',  
+"nexus_to_wb", 'the distance (m) from the nexus point to the water body',
+"endX", 'the X coordinate (CRS:5070) of the NHD flowline cap vertix closest to the input point',  
+"endY", 'the Y coordinate (CRS:5070) of the NHD flowline cap vertix closest to the input point',  
+"end_to_pt", 'the distance (m) from the end point to the input point',    
+"end_to_wb", 'the distance (m) from the end point to the input point',    
+"wb_sim", 'the text simularity between the waterbody GNIS name and the dam name(s) and river',  
+"fl_sim", 'the text simularity between the NHD flowline GNIS name and the dam name(s) and river',    
+"suggested_snap", 'the nexus or end point  with the closest textual simularity',
+"suggested_snap_dist", 'the distance of the sugested SNAP point to the existing point location',
+"max_sim",'the maximum textual simuality of the feature to either the water body of the flowline')
 
-* "nexusX"               = the X coordinate (CRS:5070) of the NHD flowline vertix closest to the input point          
-* "nexusY"               = the Y coordinate (CRS:5070) of the NHD flowline vertix closest to the input point              
-* "FL_COMID"             = the COMID of the nearest NHDPlusV2 flowline        
-* "FL_REACHCODE"         = the REACHCODE of the nearest NHDPlusV2 flowline      
-* "FL_WBCOMID"           = the COMID of the waterbody assocaited with the nearest NHDPlusV2 flowline (no association = 0)      
-* "FL_NAME"              = the GNIS NAME of the nearest NHDPlusV2 flowline      
-* "FL_FTYPE"             = the FTYPE of the nearest NHDPlusV2 flowline     
-* "WB_COMID"             = the COMID of the associated NHDPlusV2 Waterbody (if no direct association a 250m buffer was searched)     
-* "WB_REACHCODE"         = the REACHCODE of the associated NHDPlusV2 Waterbody (if no direct association a 250m buffer was searched)  
-* "WB_GNIS_NAME"         = the GNIS NAME of the associated NHDPlusV2 Waterbody (if no direct association a 250m buffer was searched)   
-* "WB_FTYPE"             = the FTYPE of the associated NHDPlusV2 Waterbody (if no direct association a 250m buffer was searched)   
-* "ptID"                 = the ID of the input point defined in function (e.g. NID_ID)
-* "ptName"               = the NAME of the input point defined in function (e.g. DAM_NAME)
-* "nexus_to_pt"          = the distance (m) from the nexus point to the input point  
-* "nexus_to_wb"          = the distance (m) from the nexus point to the water body
-* "endX"                 = the X coordinate (CRS:5070) of the NHD flowline cap vertix closest to the input point  
-* "endY"                 = the Y coordinate (CRS:5070) of the NHD flowline cap vertix closest to the input point  
-* "end_to_pt"            = the distance (m) from the end point to the input point    
-* "end_to_wb"            = the distance (m) from the end point to the input point    
-* "wb_sim"               = the text simularity between the waterbody GNIS name and the dam name(s) and river  
-* "fl_sim"               = the text simularity between the NHD flowline GNIS name and the dam name(s) and river,    
-* "suggested_snap"       = the nexus or end point  with the closest textual simularity
-* "suggested_snap_dist"  = the distance of the sugested SNAP point to the existing point location     
-* "max_sim"              = the maximum textual simuality of the feature to either the water body of the flowline
+tab = matrix(all, ncol = 2, byrow = TRUE) %>% data.frame() %>% 
+  setNames(c("Variable", "Description"))
+DT::datatable(tab, options = list(paging = FALSE, searching = FALSE))
+```

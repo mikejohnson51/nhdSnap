@@ -1,45 +1,102 @@
-library(sf)
-library(dplyr)
-library(HydroData)
-library(AOI)
-library(nhdplusTools)
+install_github("mikejohnson51/NFHL")
 
-## Downlaod from here: https://nid.sec.usace.army.mil/ords/f?p=105:1::::::
-raw = readxl::read_excel('/Users/mikejohnson/Downloads/NID2019_U.xlsx')
-source('./R/align_pt_nhd.R')
+all.dams   = readRDS("./data/nid_cleaned_5070.rds")
+gnis.5070  = readRDS("./data/gnis_sf.rds")
+source("./R/utils.R")
+source("./R/query_cida.R")
+source("./R/align_pt_nhd.R")
 
+state = state.abb[!state.abb %in% c("HI", "AK")]
 
+ind = st_nearest_feature(dams, st_transform(dd$osm_lines, 5070))
 
-## Make Spatial, remove AL and HI, c
-dams  = raw %>% 
-  filter(!is.na(LATITUDE), !is.na(LONGITUDE)) %>% 
-  filter(!STATE %in% c('AK', "HI")) %>% 
-  st_as_sf(coords = c("LONGITUDE", "LATITUDE"), crs = 4269)
+mapview(dams[1,]) + dd$osm_lines[3,]
+xx = alignDams(dams[13:14,])
 
-# Test for Alabama Dams
-go.dams = dams
-output = list()
+stringsim(tolower(dams$dam_name[4]), tolower(dd$osm_line$name), method = "cosine")
 
-for(i in length(output):nrow(go.dams)){
-  r <- NULL
-  attempt <- 1
-  
-  while(is.null(r) && attempt <= 4 ) {
-    attempt <- attempt + 1
-    try({
-      r = align_pt_to_nhd(pt   = go.dams[i,], 
-                          id   = "NIDID", 
-                          name = "DAM_NAME")
-    }
-    )
-  } 
-  
-  output[[i]] = r
-  
-  message(i, " of ", nrow(go.dams))
+xx2 = xx %>% 
+  st_as_sf(coords = c("X", "Y"), crs = 5070) %>% 
+  st_transform(4326)
+
+rm = xx2 %>% 
+  select(ID, id1, distance_m) %>% 
+  group_by(id1) %>% 
+  filter(n() > 1) %>% 
+  arrange(distance_m) %>% 
+  slice(2:n()) %>% 
+  st_drop_geometry() %>% 
+  select(-distance_m)
+
+xx3 = xx2 %>% 
+  filter(!paste0(ID, id1) %in% paste0(rm$ID, rm$id1))
+
+#   
+library(leaflet)
+leaflet() %>%
+  addTiles() %>%
+  addMarkers(data = st_transform(dams[13:14,],4326), label = ~ID) %>%
+  addCircleMarkers(data = xx3, label = ~source)
+
+ids = select(xx3, ID, source, id1) %>% 
+  tidyr::pivot_wider(names_from = source, values_from = id1) 
+
+fin = filter(xx3, rank == 1) %>% 
+  dplyr::slice_min(distance_m, n = 1)
+  select(ID, ideal.name,county, state, huc12) %>%
+  # merge(ids) %>% 
+  # select(-ID) %>% 
+  st_transform(4326) %>% 
+  mutate( X = st_coordinates(.)[,1],
+          Y = st_coordinates(.)[,2],
+          huc10 = substr(huc12,1,10))
+
+leaflet() %>% 
+  addTiles() %>% 
+  addMarkers(data = fin)#, label = ~NID) %>% 
+  addCircleMarkers(data = st_transform(dams, 4326), label = ~ID)
+
+alignDams = function(dams){
+ outs = list()
+ for(i in 1:nrow(dams)){
+    outs[[i]] =  runit(pt = dams[i,])
+    cat(crayon::blue(i, "of", nrow(dams), "\n"))
+ }
+ bind_rows(outs)
 }
 
-stats = bind_rows(output)
 
-stats = stats %>% filter(suggested_snap_dist <= 60)
-nrow(stats) 
+
+
+align_pt_to_nhd(pt = dams[i,])
+
+
+for(j in 1:length(state)){
+  
+outfile = paste0("./data/states_nid/", state[j],".rds")
+  
+if(!file.exists(outfile)){
+  
+  go.dams = dplyr::filter(all.dams, state == !!state[j])
+
+for(i in 1:nrow(go.dams)){
+
+tryCatch({
+   r = align_pt_to_nhd(pt   = go.dams[i,])
+   }, error = function(e){ r = NULL }
+   )
+
+  output[[i]] = r
+  cat(crayon::blue(i, "of", nrow(go.dams), "\n"))
+}
+  
+stats = bind_rows(output)
+saveRDS(stats, file = outfile)
+}
+message(outfile, " already complete.")
+}
+
+
+
+ff = out_to_leaf(final)
+

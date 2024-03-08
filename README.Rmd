@@ -37,3 +37,32 @@ tab = matrix(all, ncol = 2, byrow = TRUE) %>% data.frame() %>%
   setNames(c("Variable", "Description"))
 DT::datatable(tab, options = list(paging = FALSE, searching = FALSE))
 ```
+
+
+```{r}
+  NIDID     source       id1            id2                        name
+1  AL00001        INT  22205331       22204927              Lake Chinnabee
+2  AL00001      NHDWB  22204927 03150106003345              Lake Chinnabee
+3  AL00001       GNIS    161409           <NA>               Chinnabee Dam
+4  AL00001      NHDFL  22205105 03150106000091                Cheaha Creek
+5  AL00001        NID   AL00001           <NA>          LAKE CHINNABEE DAM
+6  AL00001      osmpt 358991728           <NA>               Chinnabee Dam
+7  AL00002 osmpolygon 243603638           <NA>                        bing
+8  AL00002        NID   AL00002           <NA>                COLEMAN LAKE
+9  AL00002      NHDWB  22200709 03150106003128                Coleman Lake
+10 AL00002       GNIS    161465           <NA>                 Coleman Dam
+11 AL00002      NHDFL  22201591 03150106000159                 Shoal Creek
+12 AL00002      osmpt 358991879           <NA>                 Coleman Dam
+13 AL00004       FEMA   1744552           <NA>                        <NA>
+14 AL00004        NID   AL00004           <NA>         SITE 2- CHOCCOLOCCO
+15 AL00004      NHDFL  22201315 03150106000170           Choccolocco Creek
+16 AL00004       GNIS    161468           <NA>    Choccolocco Number 2 Dam
+17 AL00004      osmpt 358991885           <NA>    Choccolocco Number 2 Dam
+18 AL00005      osmpt 358991749           <NA>               Boy Scout Dam
+19 AL00005       GNIS    161418           <NA>               Boy Scout Dam
+20 AL00005        NID   AL00005           <NA>                   BOY SCOUT
+21 AL00005 osmpolygon  33553971           <NA>                         NHD
+22 AL00005      NHDFL  15810445 03150108000945                  Carr Creek
+23 AL00005    osmline  33469209           <NA>                        <NA>
+
+````
